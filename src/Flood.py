@@ -3,12 +3,16 @@ import json
 import torch
 from torch import Tensor
 from datetime import datetime
+from importlib.resources import files
 
 import rootutils
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 from src.models import FloodModule
 
-def predict(inputs: Tensor, conds: Tensor, ckpt_path: str, metadata_path: str):
+def predict(inputs: Tensor, conds: Tensor):
+    metadata_path = files("weights").joinpath("metadata.json")
+    ckpt_path = files("weights").joinpath("not_training_2024.ckpt")
+
     with open(metadata_path, "r", encoding="utf-8") as file:
         metadata = json.load(file)
 
@@ -39,9 +43,7 @@ def predict(inputs: Tensor, conds: Tensor, ckpt_path: str, metadata_path: str):
 
 def calculate(lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho, \
             yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang, \
-            timestamp: List[datetime], \
-            ckpt_path: str = "weights/not_training_2024.ckpt",
-            metadata_path: str = "weights/metadata.json"):
+            timestamp: List[datetime]):
     length = 28
     n_timestamp_pred = 8
 
@@ -65,7 +67,7 @@ def calculate(lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quan
         conds.append(padded_c)
     conds = torch.stack(conds, dim=0)
 
-    return predict(inputs, conds, ckpt_path, metadata_path)
+    return predict(inputs, conds)
 
 if __name__ == "__main__":
 

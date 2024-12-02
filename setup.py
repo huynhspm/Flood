@@ -20,6 +20,7 @@ setup(
             "eval_command = Flood.eval:main",  # Giả sử bạn có file eval.py trong Flood
         ]
     },
+    include_package_data=True,
     python_requires=">=3.7",
     install_requires=requirements,
 )
