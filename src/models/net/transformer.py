@@ -41,15 +41,9 @@ class Transformer1D(nn.Module):
 
     def forward(self, x: torch.Tensor, cond: torch.Tensor | None = None):
 
-        if self.augment:
-            x = self.dropout(x)
-            
-            if cond is not None:
-                cond = self.dropout(cond)
-
         input_month = x[:,:,-2].to(torch.int64)
         input_day = x[:,:,-1].to(torch.int64)
-        x = x[:,:,:-2]
+        x = self.dropout(x[:,:,:-2]) if self.augment else x[:,:,:-2]
         batch, input_length, _ = x.shape
         x = x.view(batch * input_length, -1)
         x = self.input_linear(x)
@@ -62,7 +56,7 @@ class Transformer1D(nn.Module):
         if cond is not None:
             cond_month = cond[:,:,-2].to(torch.int64)
             cond_day = cond[:,:,-1].to(torch.int64)
-            cond = cond[:,:,:-2]
+            cond = self.dropout(cond[:,:,:-2]) if self.augment else cond[:,:,:-2]
             batch, cond_length, _ = cond.shape
             cond = cond.view(batch * cond_length, -1)
             cond = self.cond_linear(cond)

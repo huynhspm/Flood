@@ -13,6 +13,7 @@ class FloodDataset(Dataset):
                     "Sơn Tây", "Hà Nội", "Chũ", "Phả lại", "Cửa Cấm", "Ba lạt", "Phú thọ", "Ba Thá", "Đồ Nghi",	"Phú Lễ"]
     cond_columns = ["Yên bái", "Hòn Dấu", "Q xả Thác Bà", "Q xả Hoà Bình", "Q xả Tuyên Quang"] + ["month", "day"]
     input_columns = output_columns + ["month", "day"]
+    n_timestamp_pred = 8
 
     def __init__(self, 
                 data_dir: str,
@@ -43,13 +44,12 @@ class FloodDataset(Dataset):
         self.metadata["input_columns"] = self.input_columns
 
         if self.mode == "train":
-            with open("weights/metadata.json", "w", encoding="utf-8") as file:
+            with open(metadata_path, "w", encoding="utf-8") as file:
                 json.dump(self.metadata, file, indent=4, ensure_ascii=False)
 
     def load_data(self, data_path: str, handle_missing_values: str) -> None:
-        raw_data = pd.read_excel(data_path, skiprows=[0], parse_dates=[0], dtype=float)
+        self.data = pd.read_excel(data_path, skiprows=[0], parse_dates=[0], dtype=float)
 
-        self.data = raw_data
         self.handle_missing_values(method=handle_missing_values)
 
         self.data.rename(columns={self.data.columns[0]: "timestamp"}, inplace=True)
@@ -116,22 +116,23 @@ class FloodDataset(Dataset):
 
     def __len__(self) -> int:
         n = len(self.data)
-        return ((n - self.length - 8) // self.step + 1) * 8
+        return ((n - self.length - self.n_timestamp_pred) // self.step + 1) * self.n_timestamp_pred
 
     def __getitem__(self, index) -> Any:
-        i, next_i = index // 8, index % 8
+        i, next_i = index // self.n_timestamp_pred, index % self.n_timestamp_pred
         i *= self.step
 
         input = self.data.loc[i: i + self.length - 1, self.input_columns].to_numpy()
         cond = self.data. loc[i: i + self.length + next_i, self.cond_columns].to_numpy()
 
         output = self.data.loc[i + self.length + next_i, self.output_columns].to_numpy()
-        cond = np.concatenate((np.zeros((7 - next_i, cond.shape[1])), cond), axis=0)
-        time = self.data.iloc[i + self.length + next_i, 0]
+        cond = np.concatenate((np.zeros((self.n_timestamp_pred - next_i - 1, cond.shape[1])), cond), axis=0)
+
+        timestamp = self.data.iloc[i + self.length + next_i, 0]
         hon_dau = self.data.iloc[i + self.length + next_i, 19:20].to_numpy()
 
         if self.use_other_info:
-            return input.astype(np.float32), cond.astype(np.float32), output.astype(np.float32), time, hon_dau
+            return input.astype(np.float32), cond.astype(np.float32), output.astype(np.float32), timestamp, hon_dau
 
         return input.astype(np.float32), cond.astype(np.float32), output.astype(np.float32)
 
@@ -143,6 +144,7 @@ if __name__ == "__main__":
                             mode="train",
                             handle_missing_values="interpolate")
 
+    print(dataset.data.shape)
     print('Length Dataset:', len(dataset))
     print(dataset.data.head(10))
 

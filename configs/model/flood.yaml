@@ -18,6 +18,7 @@ net:
   d_input: 12
   d_cond: 5
   d_model: 32
+  augment: True
   month_embedder: 
     _target_: src.models.net.TimeEmbedding
     d_model: ${model.net.d_model}
@@ -34,7 +35,7 @@ net:
     _target_: src.models.net.PositionalEncoding
     d_model: ${model.net.d_model}
     max_len: 40
-    frequency: 10000.0
+    frequency: 1000.0
   input_encoder:
     _target_: torch.nn.TransformerEncoder
     encoder_layer:

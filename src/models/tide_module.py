@@ -61,7 +61,7 @@ class TideModule(LightningModule):
         :param x: A tensor of images.
         :return: A tensor of logits.
         """
-
+        x = torch.cat((x, torch.zeros_like(x[:, :1, :])), dim=1)
         med_input = self.get_delta(x)
         x[:, :, :-2] -= med_input
 
@@ -90,9 +90,8 @@ class TideModule(LightningModule):
         """
 
         x, y = batch
-        input = torch.cat((x, torch.zeros_like(x[:, :1, :])), dim=1)
         targets = torch.cat((x[:, :, :-2], y[:, None, :]), dim=1)
-        preds = self.forward(input)
+        preds = self.forward(x)
 
         loss = self.criterion(preds, targets)
 
@@ -226,17 +225,17 @@ if __name__ == "__main__":
                 config_name="tide.yaml")
     def main(cfg: DictConfig):
         print(cfg)
-        cfg["net"]["month_embedder"]["d_model"] = 32
-        cfg["net"]["day_embedder"]["d_model"] = 32
-        cfg["net"]["input_encoder"]["encoder_layer"]["d_model"] = 32
-        cfg["net"]["decoder"]["decoder_layer"]["d_model"] = 32
+        cfg["net"]["month_embedder"]["d_model"] = 8
+        cfg["net"]["day_embedder"]["d_model"] = 8
+        cfg["net"]["pos_encoder"]["d_model"] = 8
+        cfg["net"]["input_encoder"]["encoder_layer"]["d_model"] = 8
+        cfg["net"]["decoder"]["decoder_layer"]["d_model"] = 8
         model: TideModule = hydra.utils.instantiate(cfg)
 
-        print(model)
-        input = torch.randn(10, 28, 12)
-        output = torch.randn(10, 12)
+        input = torch.randn(10, 36, 1)
+        output = torch.randn(10, 1)
 
-        input = torch.cat((input, torch.randint(0, 12, (10, 28, 1)), torch.randint(0, 100, (10, 28, 1))), dim = 2)
+        input = torch.cat((input, torch.randint(0, 12, (10, 36, 1)), torch.randint(0, 100, (10, 36, 1))), dim = 2)
 
         print(input.shape, output.shape)
 

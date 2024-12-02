@@ -237,7 +237,6 @@ if __name__ == "__main__":
         
         model: FloodModule = hydra.utils.instantiate(cfg)
 
-        print(model)
         input = torch.randn(10, 28, 12)
         cond = torch.randn(10, 36, 5)
         output = torch.randn(10, 12)

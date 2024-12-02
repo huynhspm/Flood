@@ -1,0 +1,28 @@
+{
+    "mean": {
+        "timestamp": null,
+        "ground-truth": 201.51140658242412,
+        "prediction": 200.79911169819854,
+        "diff": -0.7122948842256057,
+        "hon_dau": 16.434562607204118,
+        "month": null,
+        "day": null
+    },
+    "std": {
+        "timestamp": null,
+        "ground-truth": 120.37867958604267,
+        "prediction": 113.91479773632457,
+        "diff": 32.59687178889656,
+        "hon_dau": 76.64457714701149,
+        "month": null,
+        "day": null
+    },
+    "output_columns": [
+        "diff"
+    ],
+    "input_columns": [
+        "hon_dau",
+        "month",
+        "day"
+    ]
+}

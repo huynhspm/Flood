@@ -15,21 +15,27 @@ scheduler:
 
 net:
   _target_: src.models.net.Transformer1D
-  d_input: 2
+  d_input: 1
   d_cond: null
   d_model: 8
+  augment: True
   month_embedder: 
-    _target_: src.models.net.PositionalEncoding
+    _target_: src.models.net.TimeEmbedding
     d_model: ${model.net.d_model}
     max_len: 15
     frequency: 5000.0
     amplitude: 2.0
   day_embedder: 
-    _target_: src.models.net.PositionalEncoding
+    _target_: src.models.net.TimeEmbedding
     d_model: ${model.net.d_model}
     max_len: 1500
     frequency: 10000.0
     amplitude: 1.0
+  pos_encoder:
+    _target_: src.models.net.PositionalEncoding
+    d_model: ${model.net.d_model}
+    max_len: 40
+    frequency: 1000.0
   input_encoder:
     _target_: torch.nn.TransformerEncoder
     encoder_layer:
@@ -48,7 +54,7 @@ net:
       d_model: ${model.net.d_model}
       nhead: 4
       dim_feedforward: 16
-      dropout: 0.5
+      dropout: 0.3
       batch_first: True
     num_layers: 2
 

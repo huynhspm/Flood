@@ -6,3 +6,4 @@ pin_memory: False
 length: 28
 step: 4
 dataset_name: tide
+metadata_path: weights/tide_metadata.json

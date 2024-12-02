@@ -133,7 +133,6 @@ def infer(input_file: str, metadata_path: str, ckpt_path: str):
     plt.legend()
     plt.savefig(f"{output_file}.jpg")
 
-
 if __name__ == "__main__":
     metadata_path = "weights/metadata.json"
 

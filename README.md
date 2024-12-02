@@ -13,7 +13,45 @@ This project predicts water levels at gauge stations for the upcoming days using
     cd Flood
     conda create -n flood python=3.10
     conda activate flood 
-    pip install -r requirements.txt
+    pip install -e .
+
+Once you installed the library, then you will be able to import it and use its functionalities.
+
+    from Flood import calculate
+
+Example with fake data:
+
+    import Flood
+    from datetime import datetime, timedelta
+
+    times = ['01:00', '07:00', '13:00', '19:00']
+    start_date = datetime(2024, 1, 1)
+    timestamp = [datetime.strptime(f'{(start_date + timedelta(days=day_offset)).strftime("%Y-%m-%d")} {time}', '%Y-%m-%d %H:%M') 
+                for day_offset in range(9) for time in times]
+
+    water_level_1 = [i for i in range(28)]
+    water_level_2 = [i for i in range(36)]
+
+    output = Flood.calculate(lao_cai=water_level_1,
+                            vu_quang=water_level_1,
+                            ha_giang=water_level_1,
+                            bac_me=water_level_1,
+                            vinh_tuy=water_level_1,
+                            ham_yen=water_level_1,
+                            tuyen_quang=water_level_1,
+                            son_tay=water_level_1,
+                            ha_noi=water_level_1,
+                            chu=water_level_1,
+                            pha_lai=water_level_1,
+                            phu_tho=water_level_1,
+                            yen_bai=water_level_2,
+                            hon_dau=water_level_2,
+                            xa_thac_ba=water_level_2,
+                            xa_hoa_binh=water_level_2,
+                            xa_tuyen_quang=water_level_2,
+                            timestamp=timestamp)
+
+    print(output)
 
 ### **3. Training**
 Before starting training, make sure to configure the following environment variables:

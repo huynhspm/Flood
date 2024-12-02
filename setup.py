@@ -2,20 +2,24 @@
 
 from setuptools import find_packages, setup
 
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requirements = f.read().split("\n")
+
 setup(
-    name="src",
-    version="0.0.1",
-    description="Describe Your Cool Project",
-    author="",
-    author_email="",
-    url="https://github.com/user/project",
-    install_requires=["lightning", "hydra-core"],
-    packages=find_packages(),
-    # use this to customize global commands available in the terminal after installing the package
+    name="Flood",
+    version="0.1",
+    description="Project to predict water level",
+    author="huynhspm",
+    author_email="huynhngoctrinh542002@gmail.com",
+    url="https://github.com/huynhspm/Flood",
+    packages=find_packages(where="src"),  # Tìm các package trong thư mục src
+    package_dir={"": "src"},  # Thư mục gốc chứa mã nguồn là src
     entry_points={
         "console_scripts": [
-            "train_command = src.train:main",
-            "eval_command = src.eval:main",
+            "train_command = Flood.train:main",  # Giả sử bạn có file train.py trong Flood
+            "eval_command = Flood.eval:main",  # Giả sử bạn có file eval.py trong Flood
         ]
     },
+    python_requires=">=3.7",
+    install_requires=requirements,
 )
