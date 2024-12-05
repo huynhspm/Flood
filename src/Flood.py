@@ -44,19 +44,52 @@ def predict(inputs: Tensor, conds: Tensor):
 def calculate(lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho, \
             yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang, \
             timestamp: List[datetime]):
+
+    """
+    Summary:
+    Args:
+        - lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho
+            - Water level information for measuring stations
+            - Data: List[int] with a length of 28 (7 days ago, 4 timestamps per day)
+
+        - yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang
+            - Water level information for discharge stations:
+            - Data: List[int] with a length of 36 (9 days ago, 4 timestamps per day)
+
+        - timestamp
+            - Data: List[datetime.datetime] with a length of 36 (9 days ago, 4 timestamps per day)
+            - Format: (%Y-%m-%d %H:%M), including year, month, day, hour, and minute 
+
+    Returns:
+        - output:
+            - Water level information for the Ha Noi measuring station
+            - Data: List[int] with a length of 8 (2 upcoming days, 4 timestamps per day)
+    """
+
+    input = [lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho]
+    cond = [yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang]
+
+    for i, station in enumerate(input):
+        assert len(station) == 28, f"Length of measuring station {i}-th is not 28"
+
+    for i, station in enumerate(cond):
+        assert len(station) == 36, f"Length of discharge station {i + len(input)}-th is not 36"
+
+
+    assert(len(timestamp) == 36), "Length of timestamp is not 36"
+
     length = 28
     n_timestamp_pred = 8
 
     month = [time.month for time in timestamp]
     day = [(time - datetime(time.year, 1, 1)).days * 4 + (time.hour // 6) for time in timestamp]
 
-    input = [lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho, \
-            month[:length], day[:length]]
+    input += [month[:length], day[:length]]
     input = torch.stack([torch.tensor(x, dtype=torch.float32) for x in input], dim=1)
     input = input.reshape(length, -1)
     inputs = input.unsqueeze(0).repeat(n_timestamp_pred, 1, 1)
 
-    cond = [yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang, month, day]
+    cond += [month, day]
     cond = torch.stack([torch.tensor(x, dtype=torch.float32) for x in cond], dim=1)
     cond = cond.reshape(length + n_timestamp_pred, -1)
 

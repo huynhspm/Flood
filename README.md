@@ -19,7 +19,28 @@ Once you installed the library, then you will be able to import it and use its f
 
     from Flood import calculate
 
-Example with fake data:
+Description parameters of function:
+
+    Summary:
+    Args:
+        - lao_cai, vu_quang, ha_giang, bac_me, vinh_tuy, ham_yen, tuyen_quang, son_tay, ha_noi, chu, pha_lai, phu_tho
+            - Water level information for measuring stations
+            - Data: List[int] with a length of 28 (7 days ago, 4 timestamps per day)
+
+        - yen_bai, hon_dau, xa_thac_ba, xa_hoa_binh, xa_tuyen_quang
+            - Water level information for discharge stations:
+            - Data: List[int] with a length of 36 (9 days ago, 4 timestamps per day)
+
+        - timestamp
+            - Data: List[datetime.datetime] with a length of 36 (9 days ago, 4 timestamps per day)
+            - Format: (%Y-%m-%d %H:%M), including year, month, day, hour, and minute 
+
+    Returns:
+        - output:
+            - Water level information for the Ha Noi measuring station
+            - Data: List[int] with a length of 8 (2 upcoming days, 4 timestamps per day)
+
+Run an example with fake data:
 
     import Flood
     from datetime import datetime, timedelta
